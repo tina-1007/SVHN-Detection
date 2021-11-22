@@ -1,4 +1,4 @@
-## Put the train/valid/test dataset here like:
+## Put the train/valid/test directory here like:
 
 ```
 hyps
