@@ -19,7 +19,7 @@ import torch.nn as nn
 from PIL import Image
 from torch.cuda import amp
 
-from utils.datasets import exif_transpose, letterbox
+from utils.datasets import letterbox, exif_transpose
 from utils.general import (LOGGER, check_requirements, check_suffix, colorstr, increment_path, make_divisible,
                            non_max_suppression, scale_coords, xywh2xyxy, xyxy2xywh)
 from utils.plots import Annotator, colors, save_one_box
@@ -393,6 +393,9 @@ class DetectMultiBackend(nn.Module):
             y[..., 3] *= h  # h
         y = torch.tensor(y)
         return (y, []) if val else y
+    
+    def get_model(self): 
+        return self.net
 
 
 class AutoShape(nn.Module):
@@ -444,8 +447,10 @@ class AutoShape(nn.Module):
             if isinstance(im, (str, Path)):  # filename or uri
                 im, f = Image.open(requests.get(im, stream=True).raw if str(im).startswith('http') else im), im
                 im = np.asarray(exif_transpose(im))
+                print("Transform !")
             elif isinstance(im, Image.Image):  # PIL Image
                 im, f = np.asarray(exif_transpose(im)), getattr(im, 'filename', f) or f
+                print("Transform !")
             files.append(Path(f).with_suffix('.jpg').name)
             if im.shape[0] < 5:  # image in CHW
                 im = im.transpose((1, 2, 0))  # reverse dataloader .transpose(2, 0, 1)

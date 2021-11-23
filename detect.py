@@ -18,9 +18,9 @@ if str(ROOT) not in sys.path:
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 from models.common import DetectMultiBackend
-from utils.datasets import IMG_FORMATS, VID_FORMATS, LoadImages, LoadStreams
-from utils.general import (LOGGER, check_file, check_img_size, check_imshow, check_requirements, colorstr,
-                           increment_path, non_max_suppression, print_args, scale_coords, strip_optimizer, xyxy2xywh)
+from utils.datasets import LoadImages
+from utils.general import (check_img_size, check_requirements, increment_path, 
+                           non_max_suppression, print_args, scale_coords, xyxy2xywh)
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, time_sync
 
@@ -51,11 +51,6 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
         ):
     source = str(source)
     save_img = not nosave and not source.endswith('.txt')  # save inference images
-    # is_file = Path(source).suffix[1:] in (IMG_FORMATS + VID_FORMATS)
-    # is_url = source.lower().startswith(('rtsp://', 'rtmp://', 'http://', 'https://'))
-    # webcam = source.isnumeric() or source.endswith('.txt') or (is_url and not is_file)
-    # if is_url and is_file:
-    #     source = check_file(source)  # download
 
     # Directories
     save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
@@ -85,15 +80,11 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
         vid_path, vid_writer = [None] * bs, [None] * bs
 
         for path, im, im0s, vid_cap, s in dataset:
-            # t1 = time_sync()
             im = torch.from_numpy(im).to(device)
             im = im.float()  # uint8 to fp16/32
             im /= 255  # 0 - 255 to 0.0 - 1.0
             if len(im.shape) == 3:
                 im = im[None]  # expand for batch dim
-            # t2 = time_sync()
-            # dt[0] += t2 - t1
-            
             img_h, img_w, img_c = im0s.shape
 
             # Inference
@@ -133,15 +124,18 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                     # Write results
                     for *xyxy, conf, cls in reversed(det):
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                        line = (cls, *xywh, conf)   # label bbox conf
+                        line = (cls, *xywh, conf)   # label x_center y_center width height conf
 
                         image_id = int((p.name).split('.')[0])
                         info = (('%g ' * len(line)).rstrip() % line).split(' ')
 
-                        width = int(float(info[3]) * img_w) # width
-                        height = int(float(info[4]) * img_h) # height
-                        left = int(float(info[1]) * img_w - width/2) # x_center
-                        top = int(float(info[2]) * img_h - height/2) # y_Center
+                        x_center = float(info[1]) * img_w
+                        y_center = float(info[2]) * img_h
+                        width = float(info[3]) * img_w # width
+                        height = float(info[4]) * img_h # height
+
+                        left = x_center - width/2 # x_center
+                        top = y_center - height/2 # y_Center
 
                         det_box_info = {}
 
@@ -168,9 +162,6 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                             if save_crop:
                                 save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 
-            # Print time (inference-only)
-            # LOGGER.info(f'{s}Done. ({t3 - t2:.3f}s)')
-
             # Stream results
             im0 = annotator.result()
             if view_img:
@@ -188,6 +179,13 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
     with open(str(save_dir) + "/answer.json", "w") as outfile:
         outfile.write(json_object)
 
+
+def load_model(weights=ROOT / 'yolov5s.pt', device='', dnn=False):
+    # Load model
+    device = select_device(device)
+    model = DetectMultiBackend(weights, device=device, dnn=dnn)
+
+    return model
 
 def parse_opt():
     parser = argparse.ArgumentParser()

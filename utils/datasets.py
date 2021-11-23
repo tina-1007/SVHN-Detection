@@ -77,26 +77,34 @@ def exif_transpose(image):
     exif = image.getexif()
     orientation = exif.get(0x0112, 1)  # default 1
     if orientation > 1:
-        method = {2: Image.FLIP_LEFT_RIGHT,
-                  3: Image.ROTATE_180,
-                  4: Image.FLIP_TOP_BOTTOM,
-                  5: Image.TRANSPOSE,
-                  6: Image.ROTATE_270,
-                  7: Image.TRANSVERSE,
-                  8: Image.ROTATE_90,
-                  }.get(orientation)
+        method = {2: Image.ROTATE_180,
+          3: Image.TRANSPOSE,
+          4: Image.ROTATE_270,
+          5: Image.TRANSVERSE,
+          6: Image.ROTATE_90,
+          }.get(orientation)
+        # method = {2: Image.FLIP_LEFT_RIGHT,
+        #           3: Image.ROTATE_180,
+        #           4: Image.FLIP_TOP_BOTTOM,
+        #           5: Image.TRANSPOSE,
+        #           6: Image.ROTATE_270,
+        #           7: Image.TRANSVERSE,
+        #           8: Image.ROTATE_90,
+        #           }.get(orientation)
         if method is not None:
             image = image.transpose(method)
             del exif[0x0112]
             image.info["exif"] = exif.tobytes()
+    print("Transform: ", orientation)
+    print(method)
     return image
 
 
 def create_dataloader(path, imgsz, batch_size, stride, single_cls=False, hyp=None, augment=False, cache=False, pad=0.0,
                       rect=False, rank=-1, workers=8, image_weights=False, quad=False, prefix='', shuffle=False):
-    if rect and shuffle:
-        LOGGER.warning('WARNING: --rect is incompatible with DataLoader shuffle, setting shuffle=False')
-        shuffle = False
+    # if rect and shuffle:
+    #     LOGGER.warning('WARNING: --rect is incompatible with DataLoader shuffle, setting shuffle=False')
+    #     shuffle = False
     with torch_distributed_zero_first(rank):  # init dataset *.cache only once if DDP
         dataset = LoadImagesAndLabels(path, imgsz, batch_size,
                                       augment=augment,  # augmentation
@@ -115,11 +123,11 @@ def create_dataloader(path, imgsz, batch_size, stride, single_cls=False, hyp=Non
     loader = DataLoader if image_weights else InfiniteDataLoader  # only DataLoader allows for attribute updates
     return loader(dataset,
                   batch_size=batch_size,
-                  shuffle=shuffle and sampler is None,
+                  # shuffle=shuffle and sampler is None,
                   num_workers=nw,
                   sampler=sampler,
                   pin_memory=True,
-                  collate_fn=LoadImagesAndLabels.collate_fn4 if quad else LoadImagesAndLabels.collate_fn), dataset
+                  collate_fn=LoadImagesAndLabels.collate_fn), dataset
 
 
 class InfiniteDataLoader(dataloader.DataLoader):
