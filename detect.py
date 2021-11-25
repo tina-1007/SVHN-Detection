@@ -4,6 +4,7 @@ import argparse
 import os
 import sys
 import json
+from tqdm import tqdm
 from pathlib import Path
 from os.path import join
 
@@ -73,7 +74,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
     result_to_json = []
 
     # Dataloader
-    for img_name in data_listdir:
+    for img_name in tqdm(data_listdir):
         img_path = join(source, img_name)
         dataset = LoadImages(img_path, img_size=imgsz, stride=stride, auto=pt and not jit)
         bs = 1  # batch_size
@@ -171,7 +172,6 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
             # Save results (image with detections)
             if save_img:
                 cv2.imwrite(save_path, im0)
-        print("{} Done!".format(img_name))
 
     # Write the list to answer.json 
     json_object = json.dumps(result_to_json, indent=4)

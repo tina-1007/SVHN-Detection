@@ -1,5 +1,6 @@
 import h5py
 import cv2
+from tqdm import tqdm
 
 def getName(data, n):
     digitStructName = data['digitStruct']['name'][n]
@@ -24,25 +25,24 @@ def bboxHelper(attr):
     return attr
 
 if __name__ == "__main__":
-    dir_path = './train/'
-    img_path = dir_path + 'training_images/'
+    dir_path = '/home/ytliu/VRDL/SVHN-Detection/data/svhn/train/' # change to the path of your train directory
+    img_path = dir_path + 'images/'
     file_path = dir_path + 'digitStruct.mat'
 
-    data = h5py.File(file_path)
+    data = h5py.File(file_path,'r')
     digitStructName = data['digitStruct']['name']
     digitStructBbox = data['digitStruct']['bbox']
 
     data_len = len(digitStructName)
     print('There are {} training images.'.format(data_len))
 
-    for i in range(data_len):
+    for i in tqdm(range(data_len)):
         img_name = getName(data, i)
         bboxes = getBbox(data,i)
-        print(img_name)
         im = cv2.imread(img_path + img_name)
         h, w, c = im.shape
 
-        fp = open(dir_path + 'training_annotation/' + img_name.replace('.png','.txt'), 'w')
+        fp = open(dir_path + 'labels/' + img_name.replace('.png','.txt'), 'w')
         b_num = len(bboxes['label'])
         for idx in range(b_num):
             label = int(bboxes['label'][idx] % 10)

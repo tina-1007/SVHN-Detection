@@ -77,20 +77,14 @@ def exif_transpose(image):
     exif = image.getexif()
     orientation = exif.get(0x0112, 1)  # default 1
     if orientation > 1:
-        method = {2: Image.ROTATE_180,
-          3: Image.TRANSPOSE,
-          4: Image.ROTATE_270,
-          5: Image.TRANSVERSE,
-          6: Image.ROTATE_90,
-          }.get(orientation)
-        # method = {2: Image.FLIP_LEFT_RIGHT,
-        #           3: Image.ROTATE_180,
-        #           4: Image.FLIP_TOP_BOTTOM,
-        #           5: Image.TRANSPOSE,
-        #           6: Image.ROTATE_270,
-        #           7: Image.TRANSVERSE,
-        #           8: Image.ROTATE_90,
-        #           }.get(orientation)
+        method = {2: Image.FLIP_LEFT_RIGHT,
+                  3: Image.ROTATE_180,
+                  4: Image.FLIP_TOP_BOTTOM,
+                  5: Image.TRANSPOSE,
+                  6: Image.ROTATE_270,
+                  7: Image.TRANSVERSE,
+                  8: Image.ROTATE_90,
+                  }.get(orientation)
         if method is not None:
             image = image.transpose(method)
             del exif[0x0112]
