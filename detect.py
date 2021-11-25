@@ -159,10 +159,9 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                         # print(det_box_info)
 
                         # Add bbox to image
-                        file = save_dir / 'crops' / names[c] / f'{p.stem}.jpg'
-
                         if save_img or save_crop or view_img:
                             c = int(cls)  # integer class
+                            file = save_dir / 'crops' / names[c] / f'{p.stem}.jpg'
                             label = None if hide_labels else (
                                 names[c] if hide_conf else
                                 f'{names[c]} {conf:.2f}')
