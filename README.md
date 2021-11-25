@@ -34,7 +34,7 @@ python mat_to_yolo.py
 
 #### 2. Split train dataset into train and valid manually
 
-Move *.png from `/train/images` to `/valid/images` and `.txt` from `train/labels` to `/valid/labels`
+Move `*.png` from `/train/images` to `/valid/images` and `*.txt` from `train/labels` to `/valid/labels`
 
 > Note that the two directory under `train` and `valid` must be `images` and `labels` because the training code recognizes them to pair each image and its txt file.
 
