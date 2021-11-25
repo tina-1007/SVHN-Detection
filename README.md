@@ -21,7 +21,7 @@ The `answer.json` will be generated in `/runs/detect/exp/`
 
 #### 3. Benchmark the derection model
 
-Check the result in [inference.ipynb](https://drive.google.com/file/d/18n7ma7Fxx_CtarzpzTDfWfNesJbptY0G/view?usp=sharing)
+Check the result in [inference.ipynb](https://drive.google.com/file/d/126rWkFlOuMcd9dOD_iplUJ8hjh-K5_cZ/view?usp=sharing)
 
 ## Prepare data
 
@@ -76,5 +76,5 @@ I use `yolov5l` to get my final result.
 ## Reference
 
 1. YOLOv5 - [Github](https://github.com/ultralytics/yolov5)
-2. YOLO format data pre-process [Street-View-House-Numbers-Detection](https://github.com/chia56028/Street-View-House-Numbers-Detection)
+2. YOLO format data pre-process - [Street-View-House-Numbers-Detection](https://github.com/chia56028/Street-View-House-Numbers-Detection)
 
