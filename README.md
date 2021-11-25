@@ -11,7 +11,7 @@ pip install -r requirements.txt
 
 ## Testing
 #### 1. Download the trained weights 
-Get my trained model from [here](https://drive.google.com/file/d/1frwD4lEvk7e-xmWrdhHcMdLXeLVl31pU/view?usp=sharing) and put it in root directory
+Get my trained model from [here](https://drive.google.com/file/d/18n7ma7Fxx_CtarzpzTDfWfNesJbptY0G/view?usp=sharing) and put it in root directory
 
 #### 2. Inference
 ``` 
@@ -21,13 +21,17 @@ The `answer.json` will be generated in `/runs/detect/exp/`
 
 #### 3. Benchmark the derection model
 
-Check the result in [inference.ipynb](https://drive.google.com/file/d/1KMKxUyQ12AiGK7cfw6d0esMJaFUFNyq3/view?usp=sharing)
+Check the result in [inference.ipynb](https://drive.google.com/file/d/18n7ma7Fxx_CtarzpzTDfWfNesJbptY0G/view?usp=sharing)
 
 ## Prepare data
 
-#### 1. Run `mat_to_yolo.py` in `/data`
+#### 1. Generate corresponding bounding box information for each image.
+``` 
+%cd data
+python mat_to_yolo.py
+```
 
-To generate corresponding bounding box information for each image.
+
 #### 2. Split train dataset into train and valid manually
 
 Move xxx.png from `/train/images` to `/valid/images`
@@ -61,19 +65,16 @@ data
 ```
 
 ## Training
-#### 1. Download official pre-trained yolo models
-Get models in [this link](https://github.com/ultralytics/yolov5/releases/tag/v6.0), I use `yolov5m` to get my final result.
 
-#### 2. Start training by running
 ```
-python train.py --img 320 --batch 128 --epochs 50 --weight yolov5m.pt
+python train.py --img 320 --batch 64 --epochs 50 --weight yolov5l.pt --device 0
 ```
+Pretrained weights are auto-downloaded in this code, you can also download it from [here](https://github.com/ultralytics/yolov5/releases).
+I use `yolov5l` to get my final result.
 
 
 ## Reference
 
-1. YOLOv5
-    * [Github](https://github.com/ultralytics/yolov5)
-2. YOLO format data pre-process 
-    * [Street-View-House-Numbers-Detection](https://github.com/chia56028/Street-View-House-Numbers-Detection)
+1. YOLOv5 - [Github](https://github.com/ultralytics/yolov5)
+2. YOLO format data pre-process [Street-View-House-Numbers-Detection](https://github.com/chia56028/Street-View-House-Numbers-Detection)
 
